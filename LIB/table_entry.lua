@@ -1,29 +1,29 @@
 -------------------------------------------------------------------------------
----	Reality tables entries (VERSION: 0.86.0) ... by lMonk
----	Build full table entries, conversion-ready with ToExml; For technology,
+---	Reality tables entries (VERSION: 0.88.02) ... by lMonk
+---	Build full table entries, conversion-ready with ToMxml; For technology,
 --	 proc-tech, product, recipe, basebuild objects and basebuild parts.
 ---	* Not ALL properties of the tables' classes are included. Some properties
 ---	 who are unused/deprecated/can stay with a default value are omitted.
----	* Requires _lua_2_exml.lua !
+---	* Requires _lua_2_mxml.lua !
 ---	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
 -------------------------------------------------------------------------------
 
 IT_={--	InventoryType Enum
 	SBT='Substance',	TCH='Technology',	PRD='Product'
-}
+}-- Enum
 
 --	build the requirements table for tech and products
 --	receives a table of {id, amount, product/substance} items
 function GetRequirements(r)
 	if not r then return nil end
-	local reqs = {meta = {att='name', val='Requirements'}}
+	local reqs = {meta = {name='Requirements'}}
 	for _,req in ipairs(r) do
 		reqs[#reqs+1] = {
-			meta	= {att='Requirements', val='GcTechnologyRequirement'},
+			meta	= {name='Requirements', value='GcTechnologyRequirement'},
 			ID		= req.id,
 			Amount	= req.n,							--	i
 			Type	= {
-				meta	= {att='Type', val='GcInventoryType'},
+				meta	= {name='Type', value='GcInventoryType'},
 				InventoryType = req.tp					--	Enum
 			}
 		}
@@ -34,9 +34,9 @@ end
 --	receives a table of {type, bonus, level} items
 function TechStatBonus(tsb)
 	return {
-		meta	= {att='StatBonuses', val='GcStatsBonus'},
+		meta	= {name='StatBonuses', value='GcStatsBonus'},
 		Stat	= {
-			meta		= {att='Stat', val='GcStatsTypes'},
+			meta		= {name='Stat', value='GcStatsTypes'},
 			StatsType	= tsb.st					--	Enum
 		},
 		Bonus	= tsb.bn,							--	f
@@ -49,7 +49,7 @@ end
 function TechnologyEntry(items)
 	local function techEntry(tech)
 		return {
-			meta			= {att='Table', val='GcTechnology'},
+			meta			= {name='Table', value='GcTechnology'},
 			ID				= tech.id,
 			Group			= tech.group,									--	s
 			Name			= tech.name,									--	s
@@ -60,7 +60,7 @@ function TechnologyEntry(items)
 			HintStart		= tech.hintstart,
 			HintEnd			= tech.hintend,
 			Icon			= {
-				meta	= {att='Icon', val='TkTextureResource'},
+				meta	= {name='Icon', value='TkTextureResource'},
 				Filename	= tech.icon,									--	s
 			},
 			Colour			= ColorData(tech.color, 'Colour'),				--	rgb/hex
@@ -68,7 +68,7 @@ function TechnologyEntry(items)
 			Chargeable		= tech.chargeable,								--	b
 			ChargeAmount	= tech.chargeamount	or 100,						--	i
 			ChargeType		= {
-				meta	= {att='ChargeType', val='GcRealitySubstanceCategory'},
+				meta	= {name='ChargeType', value='GcRealitySubstanceCategory'},
 				SubstanceCategory = (tech.chargetype or 'Earth'),			--	E
 			},
 			ChargeBy		= StringArray(tech.chargeby, 'ChargeBy'),		--	Id
@@ -81,22 +81,22 @@ function TechnologyEntry(items)
 			Core			= tech.core,									--	b
 			Procedural		= tech.istemplate,								--	not a bug
 			Category		= {
-				meta	= {att='Category', val='GcTechnologyCategory'},
+				meta	= {name='Category', value='GcTechnologyCategory'},
 				TechnologyCategory = tech.category,							--	Enum
 			},
 			Rarity			= {
-				meta	= {att='Rarity', val='GcTechnologyRarity'},
+				meta	= {name='Rarity', value='GcTechnologyRarity'},
 				TechnologyRarity = tech.rarity	or 'Normal',				--	Enum
 			},
 			Value			= tech.value		or 10,						--	i
 			Requirements	= GetRequirements(tech.requirements),
 			BaseStat		= {
-				meta	= {att='BaseStat', val='GcStatsTypes'},
+				meta	= {name='BaseStat', value='GcStatsTypes'},
 				StatsType	= tech.basestat,								--	Enum
 			},
 			StatBonuses		= (
 				function()
-					local stats = {meta = {att='name', val='StatBonuses'}}
+					local stats = {meta = {name='StatBonuses'}}
 					for _,tsb in ipairs(tech.statbonuses) do
 						stats[#stats+1] = TechStatBonus(tsb)
 					end
@@ -111,12 +111,13 @@ function TechnologyEntry(items)
 			RequiredRank	= tech.requiredrank	or 1,
 			FragmentCost	= tech.fragmentcost	or 1,
 			TechShopRarity	= {
-				meta	= {att='TechShopRarity', val='GcTechnologyRarity'},
+				meta	= {name='TechShopRarity', value='GcTechnologyRarity'},
 				TechnologyRarity = tech.rarity	or 'Normal',				--	E
 			},
 			WikiEnabled		= tech.wikienabled,								--	b
+			DamagedDescription	= tech.damagedesc,							--	s
 			IsTemplate		= tech.istemplate,								--	b
-			ExclusivePrimaryStat = tech.exclusiveprimarystat				--	b
+			ExclusivePrimaryStat= tech.exclusiveprimarystat					--	b
 		}
 	end
 	return ProcessOnenAll(items, techEntry)
@@ -127,36 +128,36 @@ end
 function ProductEntry(items)
 	local function prodEntry(prod)
 		return {
-			meta	= {att='value', val='GcProductData'},
+			meta	= {name='value', value='GcProductData'},
 			ID			= prod.id,
 			Name		= prod.name,									--	s
 			NameLower	= prod.namelower,								--	s
 			Subtitle	= prod.subtitle,								--	s
 			Description	= prod.description,								--	s
 			DebrisFile	= {
-				meta	= {att='DebrisFile', val='TkModelResource'},
+				meta	= {name='DebrisFile', value='TkModelResource'},
 				Filename= 'MODELS/EFFECTS/DEBRIS/TERRAINDEBRIS/TERRAINDEBRIS4.SCENE.MBIN'
 			},
 			BaseValue	= prod.basevalue or 1,							--	i
 			Icon		= {
-				meta	= {att='Icon', val='TkTextureResource'},
+				meta	= {name='Icon', value='TkTextureResource'},
 				Filename= prod.icon										--	s
 			},
 			Colour		= ColorData(prod.color, 'Colour'),				--	rgb/hex
 			Category	= {
-				meta	= {att='Category', val='GcRealitySubstanceCategory'},
+				meta	= {name='Category', value='GcRealitySubstanceCategory'},
 				SubstanceCategory	= prod.category	or 'Earth'			--	Enum
 			},
 			Type		= {
-				meta	= {att='Type', val='GcProductCategory'},
+				meta	= {name='Type', value='GcProductCategory'},
 				ProductCategory		= prod.type		or 'Component'		--	Enum
 			},
 			Rarity		= {
-				meta	= {att='Rarity', val='GcRarity'},
+				meta	= {name='Rarity', value='GcRarity'},
 				Rarity				= prod.rarity	or 'Common'			--	Enum
 			},
 			Legality	= {
-				meta	= {att='Legality', val='GcLegality'},
+				meta	= {name='Legality', value='GcLegality'},
 				Legality			= prod.legality	or 'Legal'			--	Enum
 			},
 			Consumable				= prod.consumable,					--	b
@@ -167,7 +168,7 @@ function ProductEntry(items)
 			CraftAmountMultiplier	= prod.crafmultiplier	or 1,
 			Requirements			= GetRequirements(prod.requirements),
 			Cost		= {
-				meta	= {att='Cost', val='GcItemPriceModifiers'},
+				meta	= {name='Cost', value='GcItemPriceModifiers'},
 				SpaceStationMarkup	= prod.spacestationmarkup,
 				LowPriceMod			= prod.lowpricemod		or -0.1,
 				HighPriceMod		= prod.highpricemod		or 0.1,
@@ -178,8 +179,8 @@ function ProductEntry(items)
 			SpecificChargeOnly		= prod.specificchargeonly,			--	b
 			NormalisedValueOnWorld	= prod.normalisedvalueonworld,		--	f
 			NormalisedValueOffWorld	= prod.normalisedvalueoffworld,		--	f
-			TradeCategory= {
-				meta	= {att='TradeCategory', val='GcTradeCategory'},
+			TradeCategory = {
+				meta	= {name='TradeCategory', value='GcTradeCategory'},
 				TradeCategory	= prod.tradecategory or 'None'			--	Enum
 			},
 			WikiCategory				= prod.wikicategory or 'NotEnabled',
@@ -190,7 +191,13 @@ function ProductEntry(items)
 			PinObjectiveTip				= prod.pinobjectivetip,			--	s
 			CookingIngredient			= prod.cookingingredient,		--	b
 			CookingValue				= prod.cookingvalue,			--	i
+			FoodBonusStat = {
+				meta	= {name='FoodBonusStat', value='GcStatsTypes'},
+				StatsType	= prod.foodbonusstat or 'Unspecified'		--	Enum
+			},
+			FoodBonusStatAmount			= prod.foodbonusstatamount,		--	f
 			GoodForSelling				= prod.goodforselling,			--	b
+			GiveRewardOnSpecialPurchase	= prod.rewardspecialpurchase,	--	b
 			EggModifierIngredient		= prod.eggmodifier,				--	b
 			IsTechbox					= prod.istechbox,				--	b
 			CanSendToOtherPlayers		= prod.sendtoplayer				--	b
@@ -202,15 +209,15 @@ end
 --	receives a table of {type, min, max, weightcurve, always} items
 function ProcTechStatLevel(tsl)
 	return {
-		meta		= {att='value', val='GcProceduralTechnologyStatLevel'},
+		meta		= {name='value', value='GcProceduralTechnologyStatLevel'},
 		Stat		= {
-			meta = {att='Stat', val='GcStatsTypes'},
+			meta = {name='Stat', value='GcStatsTypes'},
 			StatsType = tsl.st,							--	Enum
 		},
 		ValueMin	= tsl.mn and tsl.mn or tsl.mx,		--	f
 		ValueMax	= tsl.mx,							--	f
 		WeightingCurve = {
-			meta = {att='WeightingCurve', val='GcWeightingCurve'},
+			meta = {name='WeightingCurve', value='GcWeightingCurve'},
 			WeightingCurve = tsl.wc or 'NoWeighting',	--	Enum
 		},
 		AlwaysChoose= tsl.ac							--	b
@@ -221,7 +228,7 @@ end
 function ProcTechEntry(items)
 	local function proctechEntry(tech)
 		return {
-			meta	= {att='value', val='GcProceduralTechnologyData'},
+			meta	= {name='value', value='GcProceduralTechnologyData'},
 			ID				= tech.id,
 			Template		= tech.template,
 			Name			= tech.name,
@@ -232,19 +239,19 @@ function ProcTechEntry(items)
 			Colour			= ColorData(tech.color, 'Colour'),			--	rgb/hex
 			Quality			= tech.quality or 'Normal',					--	Enum
 			Category		= {
-				meta = {att='Category', val='GcProceduralTechnologyCategory'},
+				meta = {name='Category', value='GcProceduralTechnologyCategory'},
 				ProceduralTechnologyCategory = tech.category,			--	Enum
 			},
 			NumStatsMin		= tech.numstatsmin,							--	i
 			NumStatsMax		= tech.numstatsmax,							--	i
 			WeightingCurve	= {
-				meta = {att='WeightingCurve', val='GcWeightingCurve'},
+				meta = {name='WeightingCurve', value='GcWeightingCurve'},
 				WeightingCurve = tech.weightingcurve or 'NoWeighting',	--	Enum
 			},
 			UpgradeColour	= ColorData(tech.upgradecolor, 'UpgradeColour'),
 			StatLevels		= (
 				function()
-					local stats = {meta = {att='name', val='StatLevels'}}
+					local stats = {meta = {name='StatLevels'}}
 					for _,sl in ipairs(tech.statlevels) do
 						stats[#stats+1] = ProcTechStatLevel(sl)
 					end
@@ -260,18 +267,18 @@ end
 function BaseBuildObjectEntry(items)
 	local function baseObjectEntry(bpart)
 		return {
-			meta = {att='value', val='GcBaseBuildingEntry'},
+			meta = {name='value', value='GcBaseBuildingEntry'},
 			ID							= bpart.id,
 			Style						= {
-				meta		= {att='Style', val='GcBaseBuildingPartStyle'},
+				meta		= {name='Style', value='GcBaseBuildingPartStyle'},
 				Style		= bpart.style or 'None'						--	Enum
 			},
 			PlacementScene				= {
-				meta		= {att='PlacementScene', val='TkModelResource'},
+				meta		= {name='PlacementScene', value='TkModelResource'},
 				Filename	= bpart.placementscene
 			},
 			DecorationType				= {
-				meta		= {att='DecorationType', val='GcBaseBuildingObjectDecorationTypes'},
+				meta		= {name='DecorationType', value='GcBaseBuildingObjectDecorationTypes'},
 				BaseBuildingDecorationType = bpart.decorationtype or 'Normal'--	Enum
 			},
 			IsPlaceable					= bpart.isplaceable,			--	b
@@ -287,10 +294,10 @@ function BaseBuildObjectEntry(items)
 			Groups						= (
 				function()
 					if not bpart.groups then return nil end
-					local T = {meta = {att='name', val='Groups'}}
+					local T = {meta = {name='Groups'}}
 					for _,v in ipairs(bpart.groups) do
 						T[#T+1] = {
-							meta	= {att='value', val='GcBaseBuildingEntryGroup'},
+							meta	= {name='value', value='GcBaseBuildingEntryGroup'},
 							Group			= v.group,
 							SubGroupName	= v.subname
 						}
@@ -314,11 +321,11 @@ function BaseBuildObjectEntry(items)
 			IsSealed					= bpart.issealed,				--	b
 			CloseMenuAfterBuild			= bpart.closemenuafterbuild,
 			LinkGridData				= {
-				meta = {att='LinkGridData', val='GcBaseLinkGridData'},
+				meta = {name='LinkGridData', value='GcBaseLinkGridData'},
 				Connection = {
-					meta	= {att='Connection', val='GcBaseLinkGridConnectionData'},
+					meta	= {name='Connection', value='GcBaseLinkGridConnectionData'},
 					Network	= {
-						meta = {att='Network', val='GcLinkNetworkTypes'},
+						meta = {name='Network', value='GcLinkNetworkTypes'},
 						LinkNetworkType = bpart.linknetwork or 'Power'	--	Enum
 					},
 					NetworkSubGroup		= bpart.networksubgroup,		--	i
@@ -341,23 +348,23 @@ end
 function BaseBuildPartEntry(items)
 	local function basePartEntry(bpart)
 		local T = {
-			meta	= {att='value', val='GcBaseBuildingPart'},
+			meta	= {name='value', value='GcBaseBuildingPart'},
 			ID		= bpart.id,
-			StyleModels = {meta = {att='name', val='StyleModels'}}
+			StyleModels = {meta = {name='StyleModels'}}
 		}
 		for _,src in ipairs(bpart.stylemodels) do
 			T.StyleModels[#T.StyleModels+1] = {
-				meta = {att='value', val='GcBaseBuildingPartStyleModel'},
+				meta = {name='value', value='GcBaseBuildingPartStyleModel'},
 				Style = {
-					meta = {att='Style', val='GcBaseBuildingPartStyle'},
+					meta = {name='Style', value='GcBaseBuildingPartStyle'},
 					Style = src.style or 'None',						--	Enum
 				},
 				Model = {
-					meta = {att='Model', val='TkModelResource'},
+					meta = {name='Model', value='TkModelResource'},
 					Filename = src.act,
 				},
 				Inactive = {
-					meta = {att='Inactive', val='TkModelResource'},
+					meta = {name='Inactive', value='TkModelResource'},
 					Filename = src.lod
 				}
 			}
@@ -371,22 +378,22 @@ end
 function RefinerRecipeEntry(items)
 	local function addIngredient(elem, result)
 		return {
-			meta	= {att=(result and 'Result' or 'value'), val='GcRefinerRecipeElement'},
+			meta	= {name=(result and 'Result' or 'value'), value='GcRefinerRecipeElement'},
 			Id		= elem.id,
 			Amount	= elem.n,										--	i
 			Type	= {
-				meta			= {att='Type', val='GcInventoryType'},
+				meta			= {name='Type', value='GcInventoryType'},
 				InventoryType	= elem.tp							--	Enum
 			}
 		}
 	end
 	local function refinerecipeEntry(recipe)
-		local igrds = {meta = {att='name', val='Ingredients'}}
+		local igrds = {meta = {name='Ingredients'}}
 		for _,elem in ipairs(recipe.ingredients) do
 			igrds[#igrds+1] = addIngredient(elem)
 		end
 		return {
-			meta	= {att='value', val='GcRefinerRecipe'},
+			meta	= {name='value', value='GcRefinerRecipe'},
 			Id			= recipe.id,
 			RecipeType	= recipe.name,									--	s
 			RecipeName	= recipe.name,									--	s

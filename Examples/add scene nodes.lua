@@ -1,21 +1,20 @@
 ---------------------------------
-dofile('LIB/_lua_2_exml.lua')
+dofile('LIB/_lua_2_mxml.lua')
 dofile('LIB/scene_tools.lua')
 ---------------------------------
 NMS_MOD_DEFINITION_CONTAINER = {
 	MOD_FILENAME 		= '_TEST L2E add scene nodes.pak',
 	MOD_AUTHOR			= 'lMonk',
-	NMS_VERSION			= '5.29',
+	NMS_VERSION			= '5.58',
 	AMUMSS_SUPPRESS_MSG	= 'MIXED_TABLE',
 	MODIFICATIONS 		= {{
 	MBIN_CHANGE_TABLE	= {
 	{
 		MBIN_FILE_SOURCE	= 'MODELS/PLANETS/BIOMES/COMMON/BUILDINGS/PARTS/BUILDABLEPARTS/TECH/COOKER.SCENE.MBIN',
-		EXML_CHANGE_TABLE	= {
+		MXML_CHANGE_TABLE	= {
 			{
 			--	add a bottle standing on the cooker's left shelf that opens the fish storage menu
 				PRECEDING_KEY_WORDS	= 'Children',
-				SECTION_ACTIVE		= -1,
 				ADD 				= AddSceneNodes({
 					name	= 'LocFishBottle',
 					ntype	= 'LOCATOR',

@@ -1,20 +1,20 @@
 ----------------------------------------------------------------------
-dofile('LIB/_lua_2_exml.lua')
+dofile('LIB/_lua_2_mxml.lua')
 dofile('LIB/table_entry.lua')
 ----------------------------------------------------------------------
 
 NMS_MOD_DEFINITION_CONTAINER = {
 	MOD_FILENAME 		= '_TEST L2E add new products.pak',
 	MOD_AUTHOR			= 'lMonk',
-	NMS_VERSION			= '5.29',
+	NMS_VERSION			= '5.58',
 	MODIFICATIONS 		= {{
 	MBIN_CHANGE_TABLE	= {
 	{
 		MBIN_FILE_SOURCE	= 'METADATA/REALITY/TABLES/NMS_REALITY_GCPRODUCTTABLE.MBIN',
-		EXML_CHANGE_TABLE	= {
+		MXML_CHANGE_TABLE	= {
 			{
 				PRECEDING_KEY_WORDS	= 'Table',
-				ADD					= ToExml(ProductEntry({
+				ADD					= ToMxml(ProductEntry({
 					{
 						id				= 'ULTRAPRODX40',
 						name			= 'PRODX40_NAME',
@@ -54,6 +54,8 @@ NMS_MOD_DEFINITION_CONTAINER = {
 							{id='STELLAR2',			n=50,	tp=IT_.SBT}
 						},
 						stackmultiplier	= 20,
+						foodbonusstat		= 'Suit_Jetpack_Tank',
+						foodbonusstatamount = 0.8,
 						icon			= 'TEXTURES/UI/FRONTEND/ICONS/PRODUCTS/PRODUCT.GLOWPELLET.DDS'
 					}
 				}))

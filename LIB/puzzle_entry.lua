@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 ---	!! WORK IN PROGESS !! WORK IN PROGESS !! WORK IN PROGESS !!
 ---	Construct alien puzzle dialog entries (VERSION: 0.0.1) ... by lMonk
----	* Requires _lua_2_exml.lua !
+---	* Requires _lua_2_mxml.lua !
 ---	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
 -------------------------------------------------------------------------------
 

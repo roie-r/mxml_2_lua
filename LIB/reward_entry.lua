@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
----	Construct reward table entries (VERSION: 0.86.0) ... by lMonk
----	* Requires _lua_2_exml.lua !
+---	Construct reward table entries (VERSION: 0.88.03) ... by lMonk
+---	* Requires _lua_2_mxml.lua !
 ---	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
 -------------------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ RC_={--	RewardChoice Enum
 	WIN	= 'SelectFromSuccess',	WIN_S =	'SelectFromSuccessSilent',
 	TRY	= 'TryEach',			TRY_1 = 'TryFirst_ThenSelectAlways',
 	G1_ONE = 'GiveFirst_ThenAlsoSelectAlwaysFromRest'
-}
+}-- Enum
 PC_={--	ProceduralProductCategory Enum
 	LOT='Loot',					SLV='Salvage',
 	DOC='Document',				FOS='Fossil',
@@ -26,30 +26,30 @@ PC_={--	ProceduralProductCategory Enum
 	FRE='FreighterTechExp',
 	DBI='DismantleBio',			DTC='DismantleTech',
 	DDT='DismantleData'
-}
+}-- Enum
 IT_={--	InventoryType Enum
 	SBT='Substance',	TCH='Technology',	PRD='Product'
-}
+}-- Enum
 AR_={--	AlienRace Enum
 	TRD='Traders',		WAR='Warriors',		XPR='Explorers',
 	RBT='Robots',		ATL='Atlas',		DPL='Diplomats',
 	XTC='Exotics',		NON='None',			BLD='Builders'
-}
+}-- Enum
 CU_={--	Currency Enum
 	UT='Units',			NN='Nanites',		HG='Specials'
-}
+}-- Enum
 MI_={--	MultiItemRewardType Enum
 	PRD='Product',				SBT='Substance',
 	PRT='ProcTech',				PRP='ProcProduct',
 	ISP='InventorySlot',		ISS='InventorySlotShip',
 	ISW='InventorySlotWeapon'
-}
+}-- Enum
 RT_={--	Rarity Enum
 	C='Common',			U='Uncommon',		R='Rare'
-}
+}-- Enum
 FT_={--	FrigateFlybyType Enum
 	S='SingleShip',		G='AmbientGroup',	W='DeepSpaceCommon'
-}
+}-- Enum
 
 function R_RewardTableEntry(rte)
 	-- accepts an external list, if not found builds a new one
@@ -59,12 +59,17 @@ function R_RewardTableEntry(rte)
 			rte.list[#rte.list+1] = rwd.f(rwd)
 		end
 	end
-	rte.list.meta = {att='name', val='List'}
+	rte.list.meta = {name='List'}
 	return {
-		meta = {att='GenericTable', val='GcGenericRewardTableEntry'},
+		meta = {
+			name		='GenericTable',
+			value		='GcGenericRewardTableEntry',
+			_id			=rte.id,
+			_overwrite	=rte.overwrite or nil
+		},
 		Id	 = rte.id,
 		List = {
-			meta = {att='List', val='GcRewardTableItemList'},
+			meta = {name='List', value='GcRewardTableItemList'},
 			RewardChoice	= rte.choice or RC_.ONE,			-- Enum
 			OverrideZeroSeed= rte.zeroseed,						-- b
 			List			= rte.list
@@ -75,31 +80,23 @@ end
 function R_TableItem(item, gc_reward, props)
 	props.AmountMin = item.mn or item.mx						-- i
 	props.AmountMax = item.mx									-- i
-	-- nest value properties in extra table to account
-	-- for an ordered array layout
-	for key, val in pairs(props) do
-		if type(val) ~= 'table' then
-			props[#props+1] = {[key] = val}
-			props[key] = nil
-		end
-	end
-	props.meta = {att='name', val=gc_reward}
+	props.meta = {name=gc_reward}
 	return {
-		meta = {att='List', val='GcRewardTableItem'},
+		meta = {name='List', value='GcRewardTableItem'},
 		PercentageChance	= item.c or 1,						-- f
 		LabelID				= item.bl,							-- s
 		Reward				= {
-			meta = {att='Reward', val=gc_reward},
+			meta = {name='Reward', value=gc_reward},
 			props
 		}
 	}
 end
 
 function R_MultiItem(item)
-	local T = {meta = {att='name', val='Items'}}
+	local T = {meta = {name='Items'}}
 	for _,itm in ipairs(item.lst) do
 		T[#T+1] = {
-			meta = {att='Items', val='GcMultiSpecificItemEntry'},
+			meta = {name='Items', value='GcMultiSpecificItemEntry'},
 			Id					= itm.id,
 			MultiItemRewardType	= itm.mi or MI_.PRD,			-- Enum
 			Amount				= itm.am or 1,					-- i
@@ -108,7 +105,7 @@ function R_MultiItem(item)
 			IllegalProcTech		= itm.igl,						-- b
 			SentinelProcTech	= itm.sen,						-- b
 			ProcProdType		= {
-				meta = {att='ProcProdType', val='GcProceduralProductCategory'},
+				meta = {name='ProcProdType', value='GcProceduralProductCategory'},
 				ProceduralProductCategory = itm.pc or PC_.LOT	-- Enum
 			}
 		}
@@ -152,12 +149,12 @@ function R_ProcProduct(item)
 		'GcRewardProceduralProduct',
 		{
 			Type	= {
-				meta = {att='Type', val='GcProceduralProductCategory'},
+				meta = {name='Type', value='GcProceduralProductCategory'},
 				ProceduralProductCategory = item.pc or PC_.LOT	-- Enum
 			},
 			OverrideRarity	= item.rt ~= nil,
 			Rarity	= {
-				meta = {att='Rarity', val='GcRarity'},
+				meta = {name='Rarity', value='GcRarity'},
 				Rarity	= item.rt or RT_.C						-- Enum
 			},
 			FreighterTechQualityOverride = item.qt or -1		-- [0-3]
@@ -257,7 +254,7 @@ function R_Word(item)
 		'GcRewardTeachWord',
 		{
 			Race = {
-				meta		= {att='Race', val='GcAlienRace'},
+				meta		= {name='Race', value='GcAlienRace'},
 				AlienRace	= item.ar							-- Enum
 			}
 		}
@@ -270,7 +267,7 @@ function R_Money(item)
 		'GcRewardMoney',
 		{
 			Currency = {
-				meta		= {att='Currency', val='GcCurrency'},
+				meta		= {name='Currency', value='GcCurrency'},
 				Currency	= item.id							-- Enum
 			}
 		}
@@ -308,7 +305,7 @@ function R_Hazard(item)
 			Amount			= item.am,							-- f
 			Silent			= item.sl,							-- b
 			SpecificHazard	= item.hz and {
-				meta	= {att='SpecificHazard', val='GcPlayerHazardType'},
+				meta	= {name='SpecificHazard', value='GcPlayerHazardType'},
 				Hazard	= item.hz								-- Enum
 			} or nil
 		}
@@ -366,7 +363,7 @@ function R_FlyBy(item)
 		'GcRewardFrigateFlyby',
 		{
 			FlybyType = {
-				meta	= {att='FlybyType', val='GcFrigateFlybyType'},
+				meta	= {name='FlybyType', value='GcFrigateFlybyType'},
 				FrigateFlybyType = item.tp or FT_.W				-- Enum
 			},
 			AppearanceDelay	= item.tm or 3,						-- f
@@ -392,7 +389,7 @@ function R_UnlockTree(item)
 		'GcRewardOpenUnlockTree',
 		{
 			TreeToOpen = {
-				meta	= {att='TreeToOpen', val='GcUnlockableItemTreeGroups'},
+				meta	= {name='TreeToOpen', value='GcUnlockableItemTreeGroups'},
 				UnlockableItemTree = item.id					-- Enum
 			}
 		}
@@ -429,20 +426,20 @@ end
 --	Used by ship & tool rewards for tech inventory only
 local function InventoryContainer(inventory)
 	if not inventory then return nil end
-	local T = {meta = {att='name', val='Slots'}}
+	local T = {meta = {name='Slots'}}
 	for id, chrg in pairs(inventory) do
 		T[#T+1] = {
-			meta	= {att='Slots', val='GcInventoryElement'},
+			meta	= {name='Slots', value='GcInventoryElement'},
 			Id				= id,
 			Amount			= chrg and 10000 or -1,				-- i
 			MaxAmount		= chrg and 10000 or 100,			-- i
 			FullyInstalled	= true,
 			Type			= {
-				meta	= {att='Type', val='GcInventoryType'},
+				meta	= {name='Type', value='GcInventoryType'},
 				InventoryType	= IT_.TCH						-- Enum
 			},
 			Index	= {
-				meta	= {att='Index', val='GcInventoryIndex'},
+				meta	= {name='Index', value='GcInventoryIndex'},
 				X		= -1,									-- i
 				Y		= -1									-- i
 			}
@@ -457,19 +454,19 @@ function R_Ship(item)
 		'GcRewardSpecificShip',
 		{
 			ShipResource = {
-				meta	= {att='ShipResource', val='GcResourceElement'},
+				meta	= {name='ShipResource', value='GcResourceElement'},
 				Filename = item.filename,						-- s
 				Seed	= item.seed,							-- uint
 			},
 			ShipLayout	= {
-				meta	= {att='ShipLayout', val='GcInventoryLayout'},
+				meta	= {name='ShipLayout', value='GcInventoryLayout'},
 				Slots	= item.slots or 50						-- i
 			},
 			ShipInventory = {
-				meta	= {att='ShipInventory', val='GcInventoryContainer'},
+				meta	= {name='ShipInventory', value='GcInventoryContainer'},
 				Inventory	= InventoryContainer(item.inventory),
 				Class		= {
-					meta	= {att='Class', val='GcInventoryClass'},
+					meta	= {name='Class', value='GcInventoryClass'},
 					InventoryClass	= item.class and item.class:upper() or 'C'	-- Enum
 				},
 				BaseStatValues	= (
@@ -478,9 +475,9 @@ function R_Ship(item)
 						if item.filename:find('BIOSHIP')  then stat = 'ALIEN_SHIP' end
 						if item.filename:find('SENTINEL') then stat = 'ROBOT_SHIP' end
 						return stat and {
-							meta	= {att='name', val='BaseStatValues'},
+							meta	= {name='BaseStatValues'},
 							{
-								meta		= {att='BaseStatValues', val='GcInventoryBaseStatEntry'},
+								meta		= {name='BaseStatValues', value='GcInventoryBaseStatEntry'},
 								Value		= 1,
 								BaseStatID	= stat
 							}
@@ -489,17 +486,17 @@ function R_Ship(item)
 				)(),
 			},
 			Customisation = item.custom and {
-				meta = {att='Customisation', val='GcCharacterCustomisationData'},
+				meta = {name='Customisation', value='GcCharacterCustomisationData'},
 				DescriptorGroups	= StringArray(item.custom.shipparts, 'DescriptorGroups'),
 				PaletteID			= item.custom.paletteid,
 				Colours				= (
 					function()
-						local T = {meta = {att='name', val='Colours'}}
+						local T = {meta = {name='Colours'}}
 						for _,col in ipairs(item.custom.colors) do
 							T[#T+1] = {
-								meta	= {att='Colours', val='GcCharacterCustomisationColourData'},
+								meta	= {name='Colours', value='GcCharacterCustomisationColourData'},
 								Palette	= {
-									meta	= {att='Palette', val='TkPaletteTexture'},
+									meta	= {name='Palette', value='TkPaletteTexture'},
 									Palette		= col.palette,				-- Enum
 									ColourAlt	= col.alt					-- Enum
 								},
@@ -510,9 +507,9 @@ function R_Ship(item)
 					end
 				)(),
 				TextureOptions		= {
-					meta = {att='name', val='TextureOptions'},
+					meta = {name='TextureOptions'},
 					{
-						meta = {att='TextureOptions', val='GcCharacterCustomisationTextureOptionData'},
+						meta = {name='TextureOptions', value='GcCharacterCustomisationTextureOptionData'},
 						TextureOptionGroupName	= item.custom.texturegroup,	-- s
 						TextureOptionName		= item.custom.texturename	-- s
 					}
@@ -520,17 +517,21 @@ function R_Ship(item)
 				Scale	= 1
 			} or nil,
 			ShipType	= {
-				meta	= {att='ShipType', val='GcSpaceshipClasses'},
+				meta	= {name='ShipType', value='GcSpaceshipClasses'},
 				ShipClass	= item.modeltype					-- Enum
 			},
 			UseOverrideSizeType	= item.sizetype ~= nil,
 			OverrideSizeType	= {
-				meta	= {att='OverrideSizeType', val='GcInventoryLayoutSizeType'},
+				meta	= {name='OverrideSizeType', value='GcInventoryLayoutSizeType'},
 				SizeType	= item.sizetype	or 'DrpLarge'		-- Enum
 			},
 			NameOverride	= item.name,						-- s
 			IsRewardShip	= true,
-			IsGift			= true
+			IsGift			= true,
+			ModelViewOverride	= {
+				meta	= {name='ModelViewOverride', value='GcModelViews'},
+				ModelViews	= item.modelviews or 'Ship'			-- Enum
+			}
 		}
 	)
 end
@@ -541,29 +542,29 @@ function R_Multitool(item)
 		'GcRewardSpecificWeapon',
 		{
 			WeaponResource = {
-				meta	= {att='WeaponResource', val='GcExactResource'},
+				meta	= {name='WeaponResource', value='GcExactResource'},
 				Filename		= item.filename,				-- s
 				GenerationSeed	= item.seed						 -- uint
 			},
 			WeaponLayout	= {
-				meta	= {att='WeaponLayout', val='GcInventoryLayout'},
+				meta	= {name='WeaponLayout', value='GcInventoryLayout'},
 				Slots	= item.slots or 30,						-- i
 				Seed	= item.seed								-- uint
 			},
 			WeaponInventory	= {
-				meta	= {att='WeaponInventory', val='GcInventoryContainer'},
+				meta	= {name='WeaponInventory', value='GcInventoryContainer'},
 				Inventory	= InventoryContainer(item.inventory),
 				Class		= {
-					meta	= {att='Class', val='GcInventoryClass'},
+					meta	= {name='Class', value='GcInventoryClass'},
 					InventoryClass	= item.class and item.class:upper() or 'C'	-- Enum
 				}
 			},
 			WeaponType		= {
-				meta	= {att='WeaponType', val='GcWeaponClasses'},
+				meta	= {name='WeaponType', value='GcWeaponClasses'},
 				WeaponStatClass	= item.modeltype				-- Enum
 			},
 			InventorySizeOverride	= {
-				meta	= {att='InventorySizeOverride', val='GcInventoryLayoutSizeType'},
+				meta	= {name='InventorySizeOverride', value='GcInventoryLayoutSizeType'},
 				SizeType	= item.sizetype	or 'WeaponLarge'	-- Enum
 			},
 			NameOverride	= item.name,						-- s

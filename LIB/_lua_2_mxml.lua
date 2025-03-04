@@ -1,54 +1,56 @@
 -------------------------------------------------------------------------------
----	LUA 2 EXML (VERSION: 0.86.01) ... by lMonk
----	A tool for converting exml to an equivalent lua table and back again.
+---	LUA 2 MXML (VERSION: 0.88.03) ... by lMonk
+---	A tool for converting mxml to an equivalent lua table and back again.
+--- The full tool can be found at: https://github.com/roie-r/exml_2_lua
 ---	Helper functions for color class, vector class and string arrays
 ---	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
 -------------------------------------------------------------------------------
 
---	Generate an EXML-tagged text from a lua table representation of exml class
---	@param class: a lua2exml formatted table
-function ToExml(class)
+--	Generate an MXML-tagged text from a lua table representation of mxml file
+--	@param class: a lua2mxml formatted table
+function ToMxml(class)
 	--	replace a boolean with its text equivalent (ignore otherwise)
 	--	@param b: any value
 	local function bool(b)
-		return (type(b) == 'boolean') and ((b == true) and 'true' or 'false') or b
+		return type(b) == 'boolean' and (b == true and 'true' or 'false') or b
 	end
-	local function exml_r(tlua)
-		local exml = {}
-		function exml:add(t)
+	local function mxml_r(tlua)
+		local out = {}
+		function out:add(t)
 			for _,v in ipairs(t) do self[#self+1] = v end
 		end
-		for key, cls in pairs(tlua) do
-			if key ~= 'meta' then
-				exml[#exml+1] = '<Property '
+		for attr, cls in pairs(tlua) do
+			if attr ~= 'meta' then
+				out[#out+1] = '<Property '
 				if type(cls) == 'table' and cls.meta then
-					-- add and recurs for an inner table
-					if cls.meta.att == 'name' or cls.meta.att == 'value' then
-						exml:add({cls.meta.att, '="', cls.meta.val})
-					else
-						exml:add({'name="', cls.meta.att, '" value="', cls.meta.val})
-						if cls.meta.inx then
-							exml:add({'" index="', cls.meta.inx})
-						end
-						if cls.meta.lnk then
-							exml:add({'" linked="', cls.meta.lnk})
-						end
+				-- add and recurs for an inner table
+					for k, v in pairs(cls.meta) do
+						if k:sub(-1) ~= '_' then out:add({k, '="', bool(v), '"', ' '}) end
 					end
-					exml:add({'">', exml_r(cls), '</Property>'})
+					table.remove(out) -- trim last space
+					out:add({'>', mxml_r(cls), '</Property>'})
 				else
-					-- add a regular property
-					if type(cls) == 'table' then
-						key, cls = next(cls)
-					end
-					if key == 'name' or key == 'value' then
-						exml:add({key, '="', bool(cls), '"/>'})
+					local att, val = nil, nil
+					if tonumber(attr) then
+						if type(cls) == 'table' then
+							att, val = next(cls)
+						else
+							att = tlua.meta.name
+							val = cls
+						end
 					else
-						exml:add({'name="', key, '" value="', bool(cls), '"/>'})
+						att = attr
+						val = cls
+					end
+					if att == 'name' or att == 'value' then
+						out:add({att, '="', bool(val), '"/>'})
+					else
+						out:add({'name="', att, '" value="', bool(val), '"/>'})
 					end
 				end
 			end
 		end
-		return table.concat(exml)
+		return table.concat(out)
 	end
 	-------------------------------------------------------------------------
 	-- check the table level structure and meta placement
@@ -57,39 +59,42 @@ function ToExml(class)
 	local klen=0; for _ in pairs(class) do klen=klen+1 end
 
 	if klen == 1 and class[1].meta then
-		return exml_r(class)
+		return mxml_r(class)
 	elseif class.meta and klen > 1 then
-		return exml_r( {class} )
-	-- concatenate unrelated (instead of nested) exml sections
+		return mxml_r( {class} )
+	-- concatenate unrelated (instead of nested) mxml sections
 	elseif type(class[1]) == 'table' and klen > 1 then
 		local T = {}
 		for _, tb in pairs(class) do
-			T[#T+1] = exml_r((tb.meta and klen > 1) and {tb} or tb)
+			T[#T+1] = mxml_r((tb.meta and klen > 1) and {tb} or tb)
 		end
 		return table.concat(T)
 	end
 	return nil
 end
 
---	Adds the xml header and data template
---	Uses the contained template meta if found (instead of the received variable)
---	@param data: a lua2exml formatted table
---	@param template: an nms file template string
-function FileWrapping(data, template)
+--	Adds the header and class template for a standard mxml file
+--	@param data: A lua2mxml formatted table
+--	@param template: [optional] A class template string. Overwrites the internal template!
+function FileWrapping(tlua, ext_tmpl)
 	local wrapper = '<?xml version="1.0" encoding="utf-8"?><Data template="%s">%s</Data>'
-	if type(data) == 'string' then
-		return string.format(wrapper, template, data)
+	if type(tlua) == 'string' then
+		return string.format(wrapper, ext_tmpl, tlua)
 	end
-	-- remove the extra table added by ToLua
-	if data.template then data = data.template end
-	-- table loaded from file
-	if data.meta.att == 'template' then
-		-- strip mock template
-		local txt_data = ToExml(data):sub(#data.meta.val + 36, -12)
-		return string.format(wrapper, data.meta.val, txt_data)
-	else
-		return string.format(wrapper, template, ToExml(data))
+	-- replace existing or add template layer if needed
+	if ext_tmpl then
+		if tlua.meta.template then
+			tlua.meta.template = ext_tmpl
+		else
+			tlua = {
+				meta = {template=ext_tmpl},
+				tlua
+			}
+		end
 	end
+	-- strip mock template
+	local txt_data = ToMxml(tlua):sub(#tlua.meta.template + 23, -12)
+	return string.format(wrapper, tlua.meta.template, txt_data)
 end
 
 --	Translates a 0xFF hex section from a longer string to 0-1.0 percentage
@@ -115,7 +120,7 @@ function ColorData(C, color_name)
 		argb = C or {}
 	end
 	return {
-		meta= {att='name', val=color_name},
+		meta= {name=color_name},
 		{A	= (argb[1] or argb.a) or 1},
 		{R	= (argb[2] or argb.r) or 1},
 		{G	= (argb[3] or argb.g) or 1},
@@ -143,7 +148,7 @@ function VectorData(T, vector_name)
 	if not T then return nil end
 	return {
 		-- if a name is present then use 2-property tags
-		meta= {att='name', val=vector_name},
+		meta= {name=vector_name},
 		{X	= T[1] or T.x},
 		{Y	= T[2] or T.y},
 		{Z	= (T[3] or T.z) or nil},
@@ -156,7 +161,7 @@ end
 --	@param s_arr_name: class name
 function StringArray(t, s_arr_name)
 	if not t then return nil end
-	local T = { meta = {att='name', val=s_arr_name} }
+	local T = { meta = {name=s_arr_name} }
 	for _,s in ipairs(t) do
 		T[#T+1] = { [s_arr_name] = s }
 	end

@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
----	Build GcObjectSpawnData entries (VERSION: 0.56) ... by lMonk
----	* Requires _lua_2_exml.lua !
+---	Build GcObjectSpawnData entries (VERSION: 0.60) ... by lMonk
+---	* Requires _lua_2_mxml.lua !
 ---	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
 -------------------------------------------------------------------------------
 
@@ -10,30 +10,30 @@ function ObjectSpawnEntry(items)
 			meta	= {name=(osd.class or 'Objects'), value='GcObjectSpawnData'},
 			Type		= osd.type or 'Instanced',								-- Enum
 			Resource	= {
-				meta	= {att='Resource', val='GcResourceElement'},
+				meta	= {name='Resource', value='GcResourceElement'},
 				Filename	= osd.filename,										-- s
 				Seed		= {
-					meta = {att='Seed', val='GcSeed'},
+					meta = {name='Seed', value='GcSeed'},
 					Seed			= osd.resourceseed,							-- i
 					UseSeedValue	= osd.resourceseed ~= nil
 				},
 				ProceduralTexture	= osd.texturesamplers and {
-					meta = {att='ProceduralTexture', val='TkProceduralTextureChosenOptionList'},
+					meta = {name='ProceduralTexture', value='TkProceduralTextureChosenOptionList'},
 					Samplers = (
 						function()
-							local T = { meta = {att='name', val='Samplers'} }
+							local T = { meta = {name='Samplers'} }
 							for _,ptco in ipairs(osd.texturesamplers) do
 								local tsam = {
-									meta = {att='Samplers', val='TkProceduralTextureChosenOptionSampler'},
-									Options = { meta = {att='name', val='Options'} }
+									meta = {name='Samplers', value='TkProceduralTextureChosenOptionSampler'},
+									Options = { meta = {name='Options'} }
 								}
 								for _, opt in ipairs(ptco) do
 									tsam.Options[#tsam.Options+1] = {
-										meta = {att='Options', val='TkProceduralTextureChosenOption'},
+										meta = {name='Options', value='TkProceduralTextureChosenOption'},
 										Layer			= opt.layer,						-- s
 										Group			= opt.group,						-- s
 										Palette			= {
-											meta = {att='Palette', val='TkPaletteTexture'},
+											meta = {name='Palette', value='TkPaletteTexture'},
 											Palette		= opt.palette	or 'Rock',			-- Enum
 											ColourAlt	= opt.colouralt	or 'None'			-- Enum
 										},
@@ -51,7 +51,7 @@ function ObjectSpawnEntry(items)
 			},
 			Placement					= osd.placement,						-- s
 			Seed = {
-				meta = {att='Seed', val='GcSeed'},
+				meta = {name='Seed', value='GcSeed'},
 				Seed			= osd.spawnseed,								-- i
 				UseSeedValue	= osd.spawnseed ~= nil
 			},
@@ -89,10 +89,10 @@ function ObjectSpawnEntry(items)
 			DestroyedByVehicleEffect	= osd.vehicleeffect or 'VEHICLECRASH',	-- s
 			QualityVariants = (													-- list
 				function()
-					local T = {meta = {att='name', val='QualityVariants'}}
+					local T = {meta = {name='QualityVariants'}}
 					for i, osdv in ipairs(osd.qualityvariants) do
 						T[#T+1] = {
-							meta	= {att='QualityVariants', val='GcObjectSpawnDataVariant'},
+							meta	= {name='QualityVariants', value='GcObjectSpawnDataVariant'},
 							ID						= i == 1 and 'STANDARD' or 'ULTRA',
 							Coverage				= osdv.coverage,			-- f
 							FlatDensity				= osdv.flatdensity,			-- f
@@ -104,12 +104,12 @@ function ObjectSpawnEntry(items)
 							FadeOutEndDistance		= osdv.fadeoutend or 9999,	-- f
 							FadeOutOffsetDistance	= osdv.fadeoutoffset or nil,-- f
 							LodDistances	= {									-- list
-								meta = {att='name', val='LodDistances'},
-								{value	= 0},
-								{value	= osdv.lod and osdv.lod[1] or 20},	-- f
-								{value	= osdv.lod and osdv.lod[2] or 60},	-- f
-								{value	= osdv.lod and osdv.lod[3] or 150},	-- f
-								{value	= osdv.lod and osdv.lod[4] or 500}	-- f
+								meta = {name='LodDistances'},
+								0,
+								osdv.lod and osdv.lod[1] or 20,					-- f
+								osdv.lod and osdv.lod[2] or 60,					-- f
+								osdv.lod and osdv.lod[3] or 150,				-- f
+								osdv.lod and osdv.lod[4] or 500					-- f
 							}
 						}
 					end

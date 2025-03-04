@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
-dofile('LIB/_lua_2_exml.lua')
+dofile('LIB/_lua_2_mxml.lua')
 dofile('LIB/reward_entry.lua')
 -----------------------------------------------------------------------
 local mod_desc = [[
@@ -12,8 +12,7 @@ local mod_desc = [[
 ]]---------------------------------------------------------------------
 
 local new_rewards = {
-	{
-	---	add new ship ---
+	{--- add new ship ---
 		id			= 'MY_1ST_SHIP',
 		choice		= RC_.ALL,
 		rewardlist	= {
@@ -66,8 +65,7 @@ local new_rewards = {
 			{id=CU_.HG,	mn=100,	mx=160,	c=100,	f=R_Money}
 		}
 	},
-	{
-	---	add new multitool ---
+	{--- add new multitool ---
 		id			= 'MY_1ST_TOOL',
 		choice		= RC_.ALL,
 		rewardlist	= {
@@ -398,8 +396,8 @@ local new_rewards = {
 			{id='TRA_ENERGY1',		n=1,		x=2,		c=40,	f=R_Product},
 			{id='TRA_EXOTICS1',		n=1,		x=2,		c=40,	f=R_Product},
 			{id='ILLEGAL_PROD3',	n=1,		x=2,		c=40,	f=R_Product},
-			{id=PC_.DBI,			r=RT_.C,				c=30,	f=R_Procedural},
-			{id=PC_.DTC,			r=RT_.C,				c=30,	f=R_Procedural},
+			{id=PC_.DBI,			r=RT_.C,				c=30,	f=R_ProcProduct},
+			{id=PC_.DTC,			r=RT_.C,				c=30,	f=R_ProcProduct},
 			{id=CU_.UT,				n=18000,	x=30000,	c=80,	f=R_Money}
 		}
 	},
@@ -413,8 +411,8 @@ local new_rewards = {
 			{id='TRA_ENERGY1',		mn=1,		mx=2,		c=40,	f=R_Product},
 			{id='TRA_EXOTICS1',		mn=1,		mx=2,		c=40,	f=R_Product},
 			{id='ILLEGAL_PROD3',	mn=1,		mx=2,		c=40,	f=R_Product},
-			{id=PC_.DBI,			rt=RT_.C,				c=30,	f=R_Procedural},
-			{id=PC_.DTC,			rt=RT_.C,				c=30,	f=R_Procedural},
+			{id=PC_.DBI,			rt=RT_.C,				c=30,	f=R_ProcProduct},
+			{id=PC_.DTC,			rt=RT_.C,				c=30,	f=R_ProcProduct},
 			{id=CU_.UT,				mn=18000,	mx=30000,	c=30,	f=R_Money}
 		}
 	},
@@ -435,8 +433,8 @@ local new_rewards = {
 			{id='TRA_MINERALS3',	mn=1,		mx=3,		c=40,	f=R_Product},
 			{id='ILLEGAL_PROD4',	mn=1,		mx=2,		c=30,	f=R_Product},
 			{id='AF_METAL',			mn=100,		mx=130,		c=30,	f=R_Substance},
-			{id=PC_.DBI,			ort=true,	rt=RT_.U,	c=30,	f=R_Procedural},
-			{id=PC_.DTC,			ort=true,	rt=RT_.U,	c=30,	f=R_Procedural},
+			{id=PC_.DBI,			ort=true,	rt=RT_.U,	c=30,	f=R_ProcProduct},
+			{id=PC_.DTC,			ort=true,	rt=RT_.U,	c=30,	f=R_ProcProduct},
 			{id=CU_.NN,				mn=100,		mx=250,		c=20,	f=R_Money}
 		}
 	},
@@ -460,8 +458,8 @@ local new_rewards = {
 			{id='TRA_TECH4',		mn=1,		mx=3,		c=50,	f=R_Product},
 			{id='ILLEGAL_PROD5',	mn=1,		mx=2,		c=30,	f=R_Product},
 			{id='GEODE_RARE',					mx=1,		c=20,	f=R_Product},
-			{id=PC_.DBI,			ort=true,	rt=RT_.U,	c=20,	f=R_Procedural},
-			{id=PC_.DTC,			ort=true,	rt=RT_.U,	c=20,	f=R_Procedural},
+			{id=PC_.DBI,			ort=true,	rt=RT_.U,	c=20,	f=R_ProcProduct},
+			{id=PC_.DTC,			ort=true,	rt=RT_.U,	c=20,	f=R_ProcProduct},
 			{id=CU_.NN,				mn=300,		mx=400,		c=20,	f=R_Money}
 		}
 	},
@@ -476,8 +474,8 @@ local new_rewards = {
 			{id='ILLEGAL_PROD2',	mn=1,		mx=4,		c=30,	f=R_Product},
 			{id='WATER2',			mn=260,		mx=280,		c=30,	f=R_Substance},
 			{id='GEODE_RARE',					mx=1,		c=20,	f=R_Product},
-			{id=PC_.DBI,			ort=true,	rt=RT_.U,	c=20,	f=R_Procedural},
-			{id=PC_.DTC,			ort=true,	rt=RT_.U,	c=20,	f=R_Procedural},
+			{id=PC_.DBI,			ort=true,	rt=RT_.U,	c=20,	f=R_ProcProduct},
+			{id=PC_.DTC,			ort=true,	rt=RT_.U,	c=20,	f=R_ProcProduct},
 			{id=CU_.UT,				mn=25000,	mx=35000,	c=20,	f=R_Money}
 		}
 	},
@@ -495,7 +493,7 @@ local new_rewards = {
 		rewardlist	= {
 			{id='health',			mn=3,	mx=5,			c=100,	f=R_Health},
 			{id='shield',			mn=70,	mx=100,			c=100,	f=R_Shield},
-			{id='hazard',			hz=80,					c=100,	f=R_Hazard},
+			{id='hazard',			am=-80,					c=100,	f=R_Hazard},
 			{id='stamina',			tm=6,					c=100,	f=R_Stamina},
 			{id='jetboost',			tm=4,	pw=1.2,			c=100,	f=R_Jetboost}
 		}
@@ -511,12 +509,11 @@ local new_rewards = {
 			{id='no_sentinels',		tm=20,					c=95,	f=R_NoSentinels},
 			{id='ROGUE_HAZBOX',					mx=1,		c=10,	f=R_Product},
 			{id='UT_SHIPLAS',					mx=1,		c=10,	f=R_Product},
-			{id=PC_.FOS,				rt=RT_.R,			c=10,	f=R_Procedural},
-			{id=PC_.SPH,				rt=RT_.U,			c=10,	f=R_Procedural},
+			{id=PC_.FOS,				rt=RT_.R,			c=10,	f=R_ProcProduct},
+			{id=PC_.SPH,				rt=RT_.U,			c=10,	f=R_ProcProduct},
 			{id='SCRAP_WEAP',					mx=1,		c=10,	f=R_Product},
 			{id='STEALTH',			sl=true,				c=10,	f=R_Technology},
 			{id='ACCESS1',			sl=true,				c=10,	f=R_ProductRecipe},
-			{id={'ALLOY7','ALLOY8'},mn=2,		mx=5,		c=2,	f=R_ProductSysList},
 			{id={'ALLOY4','ALLOY5'},						c=2,	f=R_ProductAllList},
 			{id=CU_.NN,				mn=101,		mx=202,		c=100,	f=R_Money}
 		}
@@ -545,7 +542,7 @@ local function AddNewRewardsToChangeTable()
 
 	T[#T+1] = {
 		PRECEDING_KEY_WORDS	= 'GenericTable',
-		ADD					= ToExml(rewards)
+		ADD					= ToMxml(rewards)
 	}
 	return T
 end
@@ -553,13 +550,13 @@ end
 NMS_MOD_DEFINITION_CONTAINER = {
 	MOD_FILENAME 		= '_TEST L2E add replace rewards.pak',
 	MOD_AUTHOR			= 'lMonk',
-	NMS_VERSION			= '5.29',
+	NMS_VERSION			= '5.58',
 	MOD_DESCRIPTION		= mod_desc,
 	AMUMSS_SUPPRESS_MSG	= 'MIXED_TABLE',
 	MODIFICATIONS 		= {{
 	MBIN_CHANGE_TABLE	= {
 	{
 		MBIN_FILE_SOURCE	= 'METADATA/REALITY/TABLES/REWARDTABLE.MBIN',
-		EXML_CHANGE_TABLE	= AddNewRewardsToChangeTable()
+		MXML_CHANGE_TABLE	= AddNewRewardsToChangeTable()
 	}
 }}}}

@@ -1,5 +1,5 @@
 ------------------------------------------------
-dofile('LIB/_lua_2_exml.lua')
+dofile('LIB/_lua_2_mxml.lua')
 dofile('LIB/table_entry.lua')
 ------------------------------------------------
 local mod_desc = [[
@@ -44,16 +44,17 @@ local new_recipes = {
 NMS_MOD_DEFINITION_CONTAINER = {
 	MOD_FILENAME 		= '__TABLE RECIPE.pak',
 	MOD_AUTHOR			= 'lMonk',
-	NMS_VERSION			= '5.29',
+	NMS_VERSION			= '5.58',
 	MOD_DESCRIPTION		= mod_desc,
 	MODIFICATIONS 		= {{
 	MBIN_CHANGE_TABLE	= {
 	{
 		MBIN_FILE_SOURCE	= 'METADATA/REALITY/TABLES/NMS_REALITY_GCRECIPETABLE.MBIN',
-		EXML_CHANGE_TABLE	= {
+		MXML_CHANGE_TABLE	= {
 			{
 				PRECEDING_KEY_WORDS = 'Table',
-				ADD 				= ToExml(RefinerRecipeEntry(new_recipes))
+				ADD 				= ToMxml(RefinerRecipeEntry(new_recipes))
+			}
 		}
 	}
 }}}}

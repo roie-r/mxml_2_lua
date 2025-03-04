@@ -1,13 +1,11 @@
 -----------------------------------------------------------------------------------------
-dofile('C:/AMUMSS/ModScript/ModHelperScripts/LIB/_lua_2_exml.lua')
-dofile('C:/AMUMSS/ModScript/ModHelperScripts/LIB/_exml_2_lua.lua')
+dofile('C:/AMUMSS/ModScript/ModHelperScripts/LIB/_lua_2_mxml.lua')
+dofile('C:/AMUMSS/ModScript/ModHelperScripts/LIB/_mxml_2_lua.lua')
 -----------------------------------------------------------------------------------------
---	Simple examples of using ToLua & ToExml (ToExml is called by FileWrapping)
+--	Simple examples of using ToLua & ToMxml (ToMxml is called by FileWrapping)
 --	The script makes all the edits on the converted lua data table,
 --	then uses EXT_FUNC just to repack the result.
 -----------------------------------------------------------------------------------------
-
-local gc_product_table  = 'METADATA/REALITY/TABLES/NMS_REALITY_GCPRODUCTTABLE.MBIN'
 local gc_camera_globals = 'GCCAMERAGLOBALS.GLOBAL.MBIN'
 
 local function ProcessCameraGlobals(exml)
@@ -50,6 +48,8 @@ local function ProcessCameraGlobals(exml)
 	return FileWrapping(gc_cam_file)
 end
 -----------------------------------------------------------------------------------------
+local gc_product_table  = 'METADATA/REALITY/TABLES/NMS_REALITY_GCPRODUCTTABLE.MBIN'
+
 local function ProcessProductTable(exml)
 	local gc_prod_file	= ToLua(exml)
 	local gc_prod		= gc_prod_file.template.Table
@@ -68,8 +68,8 @@ local function ProcessProductTable(exml)
 	return FileWrapping(gc_prod_file)
 end
 -----------------------------------------------------------------------------------------
-ProcessRawExml = nil
-function ProcessRawExml(the_index) -- called by AMUMSS
+ProcessRawMxml = nil
+function ProcessRawMxml(the_index) -- called by AMUMSS
 	local nz_product = NormalizePath(gc_product_table, true)
 	local nz_camera  = NormalizePath(gc_camera_globals, true)
 	return {
@@ -81,11 +81,11 @@ end
 NMS_MOD_DEFINITION_CONTAINER = {
 	MOD_FILENAME		= '_TEST L2E edit with ext_func.pak',
 	MOD_AUTHOR			= 'lMonk',
-	NMS_VERSION			= '5.29',
+	NMS_VERSION			= '5.58',
 	MODIFICATIONS 		= {{
 	MBIN_CHANGE_TABLE	= {
 	{
 		MBIN_FILE_SOURCE = { gc_product_table, gc_camera_globals },
-		EXT_FUNC		 = {'ProcessRawExml'}
+		EXT_FUNC		 = {'ProcessRawMxml'}
 	}
 }}}}
