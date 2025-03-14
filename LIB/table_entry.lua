@@ -1,18 +1,20 @@
 -------------------------------------------------------------------------------
----	Reality tables entries (VERSION: 0.88.02) ... by lMonk
----	Build full table entries, conversion-ready with ToMxml; For technology,
---	 proc-tech, product, recipe, basebuild objects and basebuild parts.
----	* Not ALL properties of the tables' classes are included. Some properties
----	 who are unused/deprecated/can stay with a default value are omitted.
----	* Requires _lua_2_mxml.lua !
----	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
+---	MXML 2 LUA ... by lMonk
+---	A tool for converting between mxml file format and lua table.
+--- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
+-------------------------------------------------------------------------------
+---	Reality tables entries ... version: 1.0.01
+---	Build full table entries for technology, proc-tech, product, recipe,
+---  and basebuild objects and basebuild parts.
+---	* Not ALL class properties are included. Some who are unused/deprecated
+---	 or can safely remain with a default value are omitted.
 -------------------------------------------------------------------------------
 
 IT_={--	InventoryType Enum
 	SBT='Substance',	TCH='Technology',	PRD='Product'
 }-- Enum
 
---	build the requirements table for tech and products
+--	=> build the requirements table for tech and products
 --	receives a table of {id, amount, product/substance} items
 function GetRequirements(r)
 	if not r then return nil end
@@ -31,7 +33,7 @@ function GetRequirements(r)
 	return reqs
 end
 
---	receives a table of {type, bonus, level} items
+--	=> receives a table of {type, bonus, level} items
 function TechStatBonus(tsb)
 	return {
 		meta	= {name='StatBonuses', value='GcStatsBonus'},
@@ -44,7 +46,7 @@ function TechStatBonus(tsb)
 	}
 end
 
---	Build an entry for NMS_REALITY_GCTECHNOLOGYTABLE
+--	=> Build an entry for NMS_REALITY_GCTECHNOLOGYTABLE
 --	sub lists (requirements and color) are entered in separate tables
 function TechnologyEntry(items)
 	local function techEntry(tech)
@@ -123,7 +125,7 @@ function TechnologyEntry(items)
 	return ProcessOnenAll(items, techEntry)
 end
 
---	Build an entry for NMS_REALITY_GCPRODUCTTABLE
+--	=> Build an entry for NMS_REALITY_GCPRODUCTTABLE
 --	sub lists (requirements and color) are entered in separate tables
 function ProductEntry(items)
 	local function prodEntry(prod)
@@ -206,7 +208,7 @@ function ProductEntry(items)
 	return ProcessOnenAll(items, prodEntry)
 end
 
---	receives a table of {type, min, max, weightcurve, always} items
+--	=> receives a table of {type, min, max, weightcurve, always} items
 function ProcTechStatLevel(tsl)
 	return {
 		meta		= {name='value', value='GcProceduralTechnologyStatLevel'},
@@ -224,7 +226,7 @@ function ProcTechStatLevel(tsl)
 	}
 end
 
---	Build an entry for NMS_REALITY_GCPROCEDURALTECHNOLOGYTABLE
+--	=> Build an entry for NMS_REALITY_GCPROCEDURALTECHNOLOGYTABLE
 function ProcTechEntry(items)
 	local function proctechEntry(tech)
 		return {
@@ -263,7 +265,7 @@ function ProcTechEntry(items)
 	return ProcessOnenAll(items, proctechEntry)
 end
 
---	Build an entry for BASEBUILDINGOBJECTSTABLE
+--	=> Build an entry for BASEBUILDINGOBJECTSTABLE
 function BaseBuildObjectEntry(items)
 	local function baseObjectEntry(bpart)
 		return {
@@ -344,7 +346,7 @@ function BaseBuildObjectEntry(items)
 	return ProcessOnenAll(items, baseObjectEntry)
 end
 
---	Build an entry for BASEBUILDINGPARTSTABLE
+--	=> Build an entry for BASEBUILDINGPARTSTABLE
 function BaseBuildPartEntry(items)
 	local function basePartEntry(bpart)
 		local T = {
@@ -374,7 +376,7 @@ function BaseBuildPartEntry(items)
 	return ProcessOnenAll(items, basePartEntry)
 end
 
---	Build an entry for NMS_REALITY_GCRECIPETABLE
+--	=> Build an entry for NMS_REALITY_GCRECIPETABLE
 function RefinerRecipeEntry(items)
 	local function addIngredient(elem, result)
 		return {

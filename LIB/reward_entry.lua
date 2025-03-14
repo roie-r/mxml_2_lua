@@ -1,7 +1,9 @@
 -------------------------------------------------------------------------------
----	Construct reward table entries (VERSION: 0.88.03) ... by lMonk
----	* Requires _lua_2_mxml.lua !
----	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
+---	MXML 2 LUA ... by lMonk
+---	A tool for converting between mxml file format and lua table.
+--- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
+-------------------------------------------------------------------------------
+---	Construct reward table entries ... version: 1.0.01
 -------------------------------------------------------------------------------
 
 --  * Default is first
@@ -51,6 +53,7 @@ FT_={--	FrigateFlybyType Enum
 	S='SingleShip',		G='AmbientGroup',	W='DeepSpaceCommon'
 }-- Enum
 
+--	=> Build reward table entry
 function R_RewardTableEntry(rte)
 	-- accepts an external list, if not found builds a new one
 	if not rte.list then
@@ -77,7 +80,8 @@ function R_RewardTableEntry(rte)
 	}
 end
 
-function R_TableItem(item, gc_reward, props)
+--	=> Build a single reward item
+local function R_tableItem(item, gc_reward, props)
 	props.AmountMin = item.mn or item.mx						-- i
 	props.AmountMax = item.mx									-- i
 	props.meta = {name=gc_reward}
@@ -92,6 +96,7 @@ function R_TableItem(item, gc_reward, props)
 	}
 end
 
+--	=> Build GcMultiSpecificItemEntry
 function R_MultiItem(item)
 	local T = {meta = {name='Items'}}
 	for _,itm in ipairs(item.lst) do
@@ -110,7 +115,7 @@ function R_MultiItem(item)
 			}
 		}
 	end
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardMultiSpecificItems',
 		{
@@ -120,8 +125,9 @@ function R_MultiItem(item)
 	)
 end
 
+--	=> Build GcRewardSpecificSubstance
 function R_Substance(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardSpecificSubstance',
 		{
@@ -132,8 +138,9 @@ function R_Substance(item)
 	)
 end
 
+--	=> Build GcRewardSpecificProduct
 function R_Product(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardSpecificProduct',
 		{
@@ -143,8 +150,9 @@ function R_Product(item)
 	)
 end
 
+--	=> Build GcRewardProceduralProduct
 function R_ProcProduct(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardProceduralProduct',
 		{
@@ -162,8 +170,9 @@ function R_ProcProduct(item)
 	)
 end
 
+--	=> Build GcRewardProcTechProduct
 function R_ProcTechProduct(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardProcTechProduct',
 		{
@@ -178,8 +187,9 @@ function R_ProcTechProduct(item)
 	)
 end
 
+--	=> Build GcRewardDisguisedProduct
 function R_DisguisedProduct(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardDisguisedProduct',
 		{
@@ -190,8 +200,9 @@ function R_DisguisedProduct(item)
 	)
 end
 
+--	=> Build GcRewardMultiSpecificProducts
 function R_ProductAllList(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardMultiSpecificProducts',
 		{
@@ -200,8 +211,9 @@ function R_ProductAllList(item)
 	)
 end
 
+--	=> Build GcRewardSpecificTech
 function R_Technology(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardSpecificTech',
 		{
@@ -211,8 +223,9 @@ function R_Technology(item)
 	)
 end
 
+--	=> Build GcRewardMultiSpecificTechRecipes
 function R_TechnologyList(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardMultiSpecificTechRecipes',
 		{
@@ -224,8 +237,9 @@ function R_TechnologyList(item)
 	)
 end
 
+--	=> Build GcRewardSpecificProductRecipe
 function R_ProductRecipe(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardSpecificProductRecipe',
 		{
@@ -235,8 +249,9 @@ function R_ProductRecipe(item)
 	)
 end
 
+--	=> Build GcRewardMultiSpecificProductRecipes
 function R_ProductRecipeList(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardMultiSpecificProductRecipes',
 		{
@@ -248,8 +263,9 @@ function R_ProductRecipeList(item)
 	)
 end
 
+--	=> Build GcRewardTeachWord
 function R_Word(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardTeachWord',
 		{
@@ -261,8 +277,9 @@ function R_Word(item)
 	)
 end
 
+--	=> Build GcRewardMoney
 function R_Money(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardMoney',
 		{
@@ -274,8 +291,9 @@ function R_Money(item)
 	)
 end
 
+--	=> Build GcRewardJetpackBoost
 function R_Jetboost(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardJetpackBoost',
 		{
@@ -287,8 +305,9 @@ function R_Jetboost(item)
 	)
 end
 
+--	=> Build GcRewardFreeStamina
 function R_Stamina(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardFreeStamina',
 		{
@@ -297,8 +316,9 @@ function R_Stamina(item)
 	)
 end
 
+--	=> Build GcRewardRefreshHazProt
 function R_Hazard(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardRefreshHazProt',
 		{
@@ -312,12 +332,14 @@ function R_Hazard(item)
 	)
 end
 
+--	=> Build GcRewardShield
 function R_Shield(item)
-	return R_TableItem(item, 'GcRewardShield', {})
+	return R_tableItem(item, 'GcRewardShield', {})
 end
 
+--	=> Build GcRewardHealth
 function R_Health(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardHealth',
 		{
@@ -326,8 +348,9 @@ function R_Health(item)
 	)
 end
 
+--	=> Build GcRewardWantedLevel
 function R_Wanted(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardWantedLevel',
 		{
@@ -336,8 +359,9 @@ function R_Wanted(item)
 	)
 end
 
+--	=> Build GcRewardDisableSentinels
 function R_NoSentinels(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardDisableSentinels',
 		{
@@ -347,8 +371,9 @@ function R_NoSentinels(item)
 	)
 end
 
+--	=> Build GcRewardTriggerStorm
 function R_Storm(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardTriggerStorm',
 		{
@@ -357,8 +382,9 @@ function R_Storm(item)
 	)
 end
 
+--	=> Build GcRewardFrigateFlyby
 function R_FlyBy(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardFrigateFlyby',
 		{
@@ -372,8 +398,9 @@ function R_FlyBy(item)
 	)
 end
 
+--	=> Build GcRewardOpenPage
 function R_OpenPage(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardOpenPage',
 		{
@@ -383,8 +410,9 @@ function R_OpenPage(item)
 	)
 end
 
+--	=> Build GcRewardOpenUnlockTree
 function R_UnlockTree(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardOpenUnlockTree',
 		{
@@ -396,8 +424,9 @@ function R_UnlockTree(item)
 	)
 end
 
+--	=> Build GcRewardUnlockSeasonReward
 function R_UnlockSeasonal(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardUnlockSeasonReward',
 		{
@@ -410,8 +439,9 @@ function R_UnlockSeasonal(item)
 	)
 end
 
+--	=> Build GcRewardSpecificSpecial
 function R_Special(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardSpecificSpecial',
 		{
@@ -423,8 +453,9 @@ function R_Special(item)
 	)
 end
 
+--	=> Build GcInventoryElement
 --	Used by ship & tool rewards for tech inventory only
-local function InventoryContainer(inventory)
+local function inventoryContainer(inventory)
 	if not inventory then return nil end
 	local T = {meta = {name='Slots'}}
 	for id, chrg in pairs(inventory) do
@@ -448,8 +479,9 @@ local function InventoryContainer(inventory)
 	return T
 end
 
+--	=> Build GcRewardSpecificShip
 function R_Ship(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardSpecificShip',
 		{
@@ -464,7 +496,7 @@ function R_Ship(item)
 			},
 			ShipInventory = {
 				meta	= {name='ShipInventory', value='GcInventoryContainer'},
-				Inventory	= InventoryContainer(item.inventory),
+				Inventory	= inventoryContainer(item.inventory),
 				Class		= {
 					meta	= {name='Class', value='GcInventoryClass'},
 					InventoryClass	= item.class and item.class:upper() or 'C'	-- Enum
@@ -536,8 +568,9 @@ function R_Ship(item)
 	)
 end
 
+--	=> Build GcRewardSpecificWeapon
 function R_Multitool(item)
-	return R_TableItem(
+	return R_tableItem(
 		item,
 		'GcRewardSpecificWeapon',
 		{
@@ -553,7 +586,7 @@ function R_Multitool(item)
 			},
 			WeaponInventory	= {
 				meta	= {name='WeaponInventory', value='GcInventoryContainer'},
-				Inventory	= InventoryContainer(item.inventory),
+				Inventory	= inventoryContainer(item.inventory),
 				Class		= {
 					meta	= {name='Class', value='GcInventoryClass'},
 					InventoryClass	= item.class and item.class:upper() or 'C'	-- Enum

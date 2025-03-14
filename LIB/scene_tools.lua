@@ -1,11 +1,13 @@
 -------------------------------------------------------------------------------
----	Model scene tools (VERSION: 0.88.0) ... by lMonk
----	Helper function for adding new TkSceneNodeData nodes and properties
----	* Requires _lua_2_mxml.lua !
----	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
+---	MXML 2 LUA ... by lMonk
+---	A tool for converting between mxml file format and lua table.
+--- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
+-------------------------------------------------------------------------------
+---	Model scene tools ... version: 1.0.01
+---	Build nested TkSceneNodeData nodes
 -------------------------------------------------------------------------------
 
---	Build a single -or list of TkSceneNodeData classes
+--	=> Build a single -or list of TkSceneNodeData classes
 --	@param props: a keyed table for scene class properties.
 --	{
 --	  name	= scene node name (NameHash is calculated automatically)
@@ -82,12 +84,12 @@ function ScNode(nodes)
 	return ProcessOnenAll(nodes, sceneNode)
 end
 
---	Wrapper function. Accepts lua scene nodes and Returns an mxml string.
+--	=> Wrapper function. Accepts lua scene nodes and Returns an mxml string.
 function AddSceneNodes(nodes)
 	return ToMxml(ScNode(nodes))
 end
 
---	Builds light TkSceneNodeData sections.
+--	=> Builds light TkSceneNodeData sections.
 --	receives a table, or a table of tables, with the following (optional) parameters
 --	  name= 'n9',	fov= 360,	v=	0,
 --	  i=	30000,	f= 'q',		fr=	2,
@@ -137,7 +139,7 @@ function ScLight(lights)
 	return ScNode(lightNode(lights))
 end
 
---	Wrapper function. Accepts lua light nodes and Returns an mxml string.
+--	=> Wrapper function. Accepts lua light nodes and Returns an mxml string.
 function AddLightNodes(lights)
 	return ToMxml(ScLight(lights))
 end

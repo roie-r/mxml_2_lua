@@ -1,12 +1,13 @@
 -------------------------------------------------------------------------------
----	LUA 2 MXML (VERSION: 0.88.03) ... by lMonk
----	A tool for converting mxml to an equivalent lua table and back again.
---- The full tool can be found at: https://github.com/roie-r/exml_2_lua
----	Helper functions for color class, vector class and string arrays
----	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
+---	MXML 2 LUA ... by lMonk ... version: 1.0.01
+---	A tool for converting between mxml file format and lua table.
+--- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
+-------------------------------------------------------------------------------
+---	MXML builder - Build mxml from lua table
+--- Tools for color -and vector class, ordered string list
 -------------------------------------------------------------------------------
 
---	Generate an MXML-tagged text from a lua table representation of mxml file
+--	=> Generate an MXML-tagged text from a lua table representation of mxml file
 --	@param class: a lua2mxml formatted table
 function ToMxml(class)
 	--	replace a boolean with its text equivalent (ignore otherwise)
@@ -23,13 +24,14 @@ function ToMxml(class)
 			if attr ~= 'meta' then
 				out[#out+1] = '<Property '
 				if type(cls) == 'table' and cls.meta then
-				-- add and recurs for an inner table
+				-- add new section and recurs for nested sections
 					for k, v in pairs(cls.meta) do
 						if k:sub(-1) ~= '_' then out:add({k, '="', bool(v), '"', ' '}) end
 					end
 					table.remove(out) -- trim last space
 					out:add({'>', mxml_r(cls), '</Property>'})
 				else
+				-- add section properties
 					local att, val = nil, nil
 					if tonumber(attr) then
 						if type(cls) == 'table' then
@@ -42,7 +44,7 @@ function ToMxml(class)
 						att = attr
 						val = cls
 					end
-					if att == 'name' or att == 'value' then
+					if att == 'name' then
 						out:add({att, '="', bool(val), '"/>'})
 					else
 						out:add({'name="', att, '" value="', bool(val), '"/>'})
@@ -73,13 +75,13 @@ function ToMxml(class)
 	return nil
 end
 
---	Adds the header and class template for a standard mxml file
+--	=> Adds the header and class template for a standard mxml file
 --	@param data: A lua2mxml formatted table
 --	@param template: [optional] A class template string. Overwrites the internal template!
 function FileWrapping(tlua, ext_tmpl)
 	local wrapper = '<?xml version="1.0" encoding="utf-8"?><Data template="%s">%s</Data>'
 	if type(tlua) == 'string' then
-		return string.format(wrapper, ext_tmpl, tlua)
+		return wrapper:format(ext_tmpl, tlua)
 	end
 	-- replace existing or add template layer if needed
 	if ext_tmpl then
@@ -94,17 +96,17 @@ function FileWrapping(tlua, ext_tmpl)
 	end
 	-- strip mock template
 	local txt_data = ToMxml(tlua):sub(#tlua.meta.template + 23, -12)
-	return string.format(wrapper, tlua.meta.template, txt_data)
+	return wrapper:format(tlua.meta.template, txt_data)
 end
 
---	Translates a 0xFF hex section from a longer string to 0-1.0 percentage
+--	=> Translates a 0xFF hex section from a longer string to 0-1.0 percentage
 --	@param hex: hex string (case insensitive [A-z0-9])
 --	@param i: the hex pair's index
 function Hex2Percent(hex, i)
 	return math.floor(tonumber(hex:sub(i * 2 - 1, i * 2), 16) / 255 * 1000) / 1000
 end
 
---	Returns a Colour class
+--	=> Builds a Colour class
 --	@param T: ARGB color in percentage values or hex format.
 --	  Either {1.0, 0.5, 0.4, 0.3} or {<a=1.0> <,r=0.5> <,g=0.4> <,b=0.3>} or 'FFA0B1C2'
 --	@param color_name: class name
@@ -128,7 +130,7 @@ function ColorData(C, color_name)
 	}
 end
 
---	Builds an amumss VCT table from a hex color string
+--	=> Builds an amumss VCT table from a hex color string
 --	@param h: hex color string in ARGB or RGB format (default is white)
 --	(not really the place for this one, but it's convenient)
 function Hex2VCT(h)
@@ -140,7 +142,7 @@ function Hex2VCT(h)
 	return argb
 end
 
---	Returns a Vector 2, 3 or 4f class, depending on number of values
+--	=> Builds a Vector 2, 3 or 4f class, depending on number of values
 --	@param T: xy<z<t>> vector
 --	  Either {1.0, 0.5 <,0.4, <,2>>} or {x=1.0, y=0.5 <,z=0.4 <,t=2>>}
 --	@param vector_name: class name
@@ -156,7 +158,7 @@ function VectorData(T, vector_name)
 	}
 end
 
---	Returns a 'name' type array of strings
+--	=> Builds a 'name' type array of strings
 --	@param t: an ordered (non-keyed) table of strings
 --	@param s_arr_name: class name
 function StringArray(t, s_arr_name)
@@ -168,7 +170,7 @@ function StringArray(t, s_arr_name)
 	return T
 end
 
---	Determine if received is a single or multi-item
+--	=> Determine if received is a single or multi-item
 --	then process items through the received function
 --	@param items: table of item properties or a non-keyed table of items (keys are ignored)
 --	@param acton: the function to process the items in the table

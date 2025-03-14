@@ -1,9 +1,12 @@
 -------------------------------------------------------------------------------
----	Build GcObjectSpawnData entries (VERSION: 0.60) ... by lMonk
----	* Requires _lua_2_mxml.lua !
----	* This script should be in [AMUMSS folder]\ModScript\ModHelperScripts\LIB
+---	MXML 2 LUA ... by lMonk
+---	A tool for converting between mxml file format and lua table.
+--- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
+-------------------------------------------------------------------------------
+---	Build GcObjectSpawnData entries ... version: 1.0.01
 -------------------------------------------------------------------------------
 
+--	=> Build a GcObjectSpawnData entry for biome object files
 function ObjectSpawnEntry(items)
 	local function spawnEntry(osd)
 		return {
