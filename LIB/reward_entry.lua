@@ -3,7 +3,7 @@
 ---	A tool for converting between mxml file format and lua table.
 --- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
 -------------------------------------------------------------------------------
----	Construct reward table entries ... version: 1.0.01
+---	Construct reward table entries ... version: 1.0.03
 -------------------------------------------------------------------------------
 
 --  * Default is first
@@ -65,10 +65,11 @@ function R_RewardTableEntry(rte)
 	rte.list.meta = {name='List'}
 	return {
 		meta = {
-			name		='GenericTable',
-			value		='GcGenericRewardTableEntry',
-			_id			=rte.id,
-			_overwrite	=rte.overwrite or nil
+			name		= 'GenericTable',
+			value		= 'GcGenericRewardTableEntry',
+			_id			= rte.id,
+			_overwrite	= rte.overwrite	or nil,
+			_remove		= rte.remove	or nil
 		},
 		Id	 = rte.id,
 		List = {

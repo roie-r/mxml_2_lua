@@ -3,7 +3,7 @@
 ---	A tool for converting between mxml file format and lua table.
 --- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
 -------------------------------------------------------------------------------
----	Convert mxml to lua ... version: 1.0.01
+---	Convert mxml to lua ... version: 1.0.03
 ---	Parse mxml file -or sections and convert to lua during run-time
 ---	 or pretty-print the mxml as a ready-to-load lua file.
 -------------------------------------------------------------------------------
@@ -16,20 +16,25 @@ local function unWrap(mxml)
 		return ('<Property template="%s">%s</Property>'):format(
 			mxml:match('<Data template="([%w_]+)">'),
 			mxml:sub(mxml:find('<Property'), -8)
-		)		
+		)
 	else
 		return mxml
 	end
 end
 
 --	=> Parse attributes from xml tag and return them in a table
---	* A key with [_] suffix is ignored by ToMxml
+--	* Keys with [_] suffix are ignored by ToMxml
 --	@param prop: string containing xml tag attributes
 local function parseTag(prop)
 	if #prop < 1 then return nil end
-	local attr = { opn_ = prop:sub(-1) ~= '/' }
-	for att, val in prop:gmatch('(.-)="(.-)"') do
-		attr[att:gsub('^%s+', '')] = val
+	local attr = {-- the attribute container for each tag
+		opn_ = prop:sub(-1) ~= '/',
+		ord_ = {} -- keep order for writing attributes to file
+	}
+	for at1, val in prop:gmatch('(.-)="(.-)"') do
+		local att = at1:gsub('^%s+', '')
+		attr[att] = val
+		attr.ord_[#attr.ord_+1] = att
 	end
 	local ln = select(2, prop:gsub('=', ''))
 	attr.lst_ = ln == 1
@@ -155,12 +160,12 @@ function PrintMxmlAsLua(vars)
 				end
 				lvl = lvl + 1
 				tlua:add({'{\n', ind:rep(lvl), 'meta = {'})
-				for at, vl in pairs(tag) do
-					if at:sub(-1) ~= '_' then tlua:add({at, '="', vl, '"', ', '}) end
+				for _,att in ipairs(tag.ord_) do
+					tlua:add({att, '=', com, tag[att], com, ', '})
 				end
 				if vars.intern then -- include internal meta data
 					for at, vl in pairs(tag) do
-						if at:sub(-1) == '_' then tlua:add({at, '="', tostring(vl), '"', ', '}) end
+						if at:sub(-1) == '_' then tlua:add({at, '=', com, tostring(vl), com, ', '}) end
 					end
 				end
 				tlua:rem() -- trim last comma

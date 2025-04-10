@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
----	MXML 2 LUA ... by lMonk ... version: 1.0.01
+---	MXML 2 LUA ... by lMonk ... version: 1.0.03
 ---	A tool for converting between mxml file format and lua table.
 --- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
 -------------------------------------------------------------------------------
@@ -15,6 +15,7 @@ function ToMxml(class)
 	local function bool(b)
 		return type(b) == 'boolean' and (b == true and 'true' or 'false') or b
 	end
+	local at_ord = {'template', 'name', 'value', 'linked', '_id', '_index', '_overwrite'}
 	local function mxml_r(tlua)
 		local out = {}
 		function out:add(t)
@@ -22,12 +23,15 @@ function ToMxml(class)
 		end
 		for attr, cls in pairs(tlua) do
 			if attr ~= 'meta' then
-				out[#out+1] = '<Property '
+				out:add({'<Property '})
 				if type(cls) == 'table' and cls.meta then
 				-- add new section and recurs for nested sections
-					for k, v in pairs(cls.meta) do
-						if k:sub(-1) ~= '_' then out:add({k, '="', bool(v), '"', ' '}) end
+					for _,at in ipairs(at_ord) do
+						if cls.meta[at] then out:add({at, '="', bool(cls.meta[at]), '"', ' '}) end
 					end
+					-- for k, v in pairs(cls.meta) do
+						-- if k:sub(-1) ~= '_' then out:add({k, '="', bool(v), '"', ' '}) end
+					-- end
 					table.remove(out) -- trim last space
 					out:add({'>', mxml_r(cls), '</Property>'})
 				else
@@ -78,7 +82,7 @@ end
 --	=> Adds the header and class template for a standard mxml file
 --	@param data: A lua2mxml formatted table
 --	@param template: [optional] A class template string. Overwrites the internal template!
-function FileWrapping(tlua, ext_tmpl)
+function ToMxmlFile(tlua, ext_tmpl)
 	local wrapper = '<?xml version="1.0" encoding="utf-8"?><Data template="%s">%s</Data>'
 	if type(tlua) == 'string' then
 		return wrapper:format(ext_tmpl, tlua)

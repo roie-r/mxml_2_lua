@@ -3,7 +3,7 @@
 ---	A tool for converting between mxml file format and lua table.
 --- The complete tool can be found at: https://github.com/roie-r/mxml_2_lua
 -------------------------------------------------------------------------------
----	Reality tables entries ... version: 1.0.01
+---	Reality tables entries ... version: 1.01.0
 ---	Build full table entries for technology, proc-tech, product, recipe,
 ---  and basebuild objects and basebuild parts.
 ---	* Not ALL class properties are included. Some who are unused/deprecated
@@ -47,7 +47,7 @@ function TechStatBonus(tsb)
 end
 
 --	=> Build an entry for NMS_REALITY_GCTECHNOLOGYTABLE
---	sub lists (requirements and color) are entered in separate tables
+--	* handles multiple entries
 function TechnologyEntry(items)
 	local function techEntry(tech)
 		return {
@@ -126,7 +126,7 @@ function TechnologyEntry(items)
 end
 
 --	=> Build an entry for NMS_REALITY_GCPRODUCTTABLE
---	sub lists (requirements and color) are entered in separate tables
+--	* handles multiple entries
 function ProductEntry(items)
 	local function prodEntry(prod)
 		return {
@@ -227,6 +227,7 @@ function ProcTechStatLevel(tsl)
 end
 
 --	=> Build an entry for NMS_REALITY_GCPROCEDURALTECHNOLOGYTABLE
+--	* handles multiple entries
 function ProcTechEntry(items)
 	local function proctechEntry(tech)
 		return {
@@ -266,6 +267,7 @@ function ProcTechEntry(items)
 end
 
 --	=> Build an entry for BASEBUILDINGOBJECTSTABLE
+--	* handles multiple entries
 function BaseBuildObjectEntry(items)
 	local function baseObjectEntry(bpart)
 		return {
@@ -347,6 +349,7 @@ function BaseBuildObjectEntry(items)
 end
 
 --	=> Build an entry for BASEBUILDINGPARTSTABLE
+--	* handles multiple entries
 function BaseBuildPartEntry(items)
 	local function basePartEntry(bpart)
 		local T = {
@@ -377,6 +380,7 @@ function BaseBuildPartEntry(items)
 end
 
 --	=> Build an entry for NMS_REALITY_GCRECIPETABLE
+--	* handles multiple entries
 function RefinerRecipeEntry(items)
 	local function addIngredient(elem, result)
 		return {
@@ -406,4 +410,59 @@ function RefinerRecipeEntry(items)
 		}
 	end
 	return ProcessOnenAll(items, refinerecipeEntry)
+end
+
+--	=> builds a LocalisationTable from text entries.
+--	receives a table of items in the following structure
+--	UNIQUE_ID = {
+--	  EN = [[your text line here]],
+--	  FR = [[votre ligne de texte ici]],
+--	}
+function LocalisationTable(texts)
+	local languages = {
+		EN = 'English',
+		FR = 'French',
+		IT = 'Italian',
+		DE = 'German',
+		ES = 'Spanish',
+		RU = 'Russian',
+		PL = 'Polish',
+		NL = 'Dutch',
+		PT = 'Portuguese',
+		LA = 'LatinAmericanSpanish',
+		BR = 'BrazilianPortuguese',
+		Z1 = 'SimplifiedChinese',
+		ZH = 'TraditionalChinese',
+		Z2 = 'TencentChinese',
+		KO = 'Korean',
+		JA = 'Japanese',
+		US = 'USEnglish'
+	}
+	-- replace problematic characters with char entities
+	local function insertCharEntities(s)
+		local entity = {
+			{'&',	'&amp;'}, -- must be first
+			{'<',	'&lt;'},
+			{'>',	'&gt;'},
+			{'"',	'&quot;'},
+			{'|N|',	'&#xA;'}
+		}
+		for _,e in ipairs(entity) do
+			s = s:gsub(e[1], e[2])
+		end
+		return s
+	end
+	if not texts then return nil end
+	local l_txt = {meta = {name='Table'}}
+	for id, text in pairs(texts) do
+		local inx = #l_txt+1
+		l_txt[inx] = {
+			meta	= {name='Table', value='TkLocalisationEntry'},
+			Id		= id
+		}
+		for code, txt in pairs(text) do
+			l_txt[inx][languages[code]] = insertCharEntities(txt)
+		end
+	end
+	return l_txt
 end
